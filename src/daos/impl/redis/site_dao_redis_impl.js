@@ -1,5 +1,5 @@
-const redis = require('./redis_client');
-const keyGenerator = require('./redis_key_generator');
+const redis = require("./redis_client");
+const keyGenerator = require("./redis_key_generator");
 
 /**
  * Takes a flat key/value pairs object representing a Redis hash, and
@@ -20,7 +20,7 @@ const remap = (siteHash) => {
   remappedSiteHash.capacity = parseFloat(siteHash.capacity, 10);
 
   // coordinate is optional.
-  if (siteHash.hasOwnProperty('lat') && siteHash.hasOwnProperty('lng')) {
+  if (siteHash.hasOwnProperty("lat") && siteHash.hasOwnProperty("lng")) {
     remappedSiteHash.coordinate = {
       lat: parseFloat(siteHash.lat),
       lng: parseFloat(siteHash.lng),
@@ -46,7 +46,7 @@ const remap = (siteHash) => {
 const flatten = (site) => {
   const flattenedSite = { ...site };
 
-  if (flattenedSite.hasOwnProperty('coordinate')) {
+  if (flattenedSite.hasOwnProperty("coordinate")) {
     flattenedSite.lat = flattenedSite.coordinate.lat;
     flattenedSite.lng = flattenedSite.coordinate.lng;
     delete flattenedSite.coordinate;
@@ -85,7 +85,7 @@ const findById = async (id) => {
 
   const siteHash = await client.hgetallAsync(siteKey);
 
-  return (siteHash === null ? siteHash : remap(siteHash));
+  return siteHash === null ? siteHash : remap(siteHash);
 };
 
 /* eslint-disable arrow-body-style */
@@ -96,7 +96,25 @@ const findById = async (id) => {
  */
 const findAll = async () => {
   // START CHALLENGE #1
-  return [];
+  const client = redis.getClient();
+
+  // To correctly implement this function, you'll need to remember that we've stored site keys in a set.
+  // You can see how to get the name of the set by studying this DAO implementation's insert() function.
+  const nameDelSet = keyGenerator.getSiteIDsKey(); // ru102js:sites:ids
+
+  // get the names of all of the sites from that set (obtengo los hash que pertenecen a esa key)
+  const siteKeys = await client.smembersAsync(nameDelSet);
+
+  // Then, for each site name, you'll need to get the site attributes and use them to create a site object in the correct format,
+  // returning an array of objects. Don't forget that the DAO's remap() function can help you with this.
+  const sites = [];
+  for (const siteKey of siteKeys) {
+    const siteHash = await client.hgetallAsync(siteKey);
+    const remappedHash = remap(siteHash);
+    sites.push(remappedHash);
+  }
+
+  return sites;
   // END CHALLENGE #1
 };
 /* eslint-enable */
