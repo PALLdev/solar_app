@@ -110,10 +110,10 @@ const findAll = async () => {
   const sites = [];
   for (const siteKey of siteKeys) {
     const siteHash = await client.hgetallAsync(siteKey);
-    const remappedHash = remap(siteHash);
-    sites.push(remappedHash);
+    if (siteHash) {
+      sites.push(remap(siteHash));
+    }
   }
-
   return sites;
   // END CHALLENGE #1
 };
