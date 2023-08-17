@@ -100,10 +100,10 @@ const findAll = async () => {
 
   // To correctly implement this function, you'll need to remember that we've stored site keys in a set.
   // You can see how to get the name of the set by studying this DAO implementation's insert() function.
-  const nameDelSet = keyGenerator.getSiteIDsKey(); // ru102js:sites:ids
+  const siteIds = keyGenerator.getSiteIDsKey(); // ru102js:sites:ids
 
   // get the names of all of the sites from that set (obtengo los hash que pertenecen a esa key)
-  const siteKeys = await client.smembersAsync(nameDelSet);
+  const siteKeys = await client.smembersAsync(siteIds);
 
   // Then, for each site name, you'll need to get the site attributes and use them to create a site object in the correct format,
   // returning an array of objects. Don't forget that the DAO's remap() function can help you with this.

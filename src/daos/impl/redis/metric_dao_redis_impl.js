@@ -61,16 +61,18 @@ const insertMetric = async (siteId, metricValue, metricName, timestamp) => {
 
   // START Challenge #2
 
+  const pipeline = client.batch();
   // First you need to add a metric value to the sorted set whose key is stored in the variable metricKey.
-  await client.zaddAsync(
+  pipeline.zadd(
     metricKey,
     minuteOfDay,
     formatMeasurementMinute(metricValue, minuteOfDay)
   );
 
   // Then, you should ensure that the sorted set held at metricKey is set to expire after metricExpirationSeconds,
-  await client.expireAsync(metricKey, metricExpirationSeconds);
+  pipeline.expire(metricKey, metricExpirationSeconds);
 
+  await pipeline.execAsync();
   // END Challenge #2
 };
 /* eslint-enable */
