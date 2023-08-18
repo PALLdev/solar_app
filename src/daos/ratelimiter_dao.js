@@ -1,6 +1,6 @@
-const daoLoader = require('./daoloader');
+const daoLoader = require("./daoloader");
 
-const impl = daoLoader.loadDao('ratelimiter');
+const impl = daoLoader.loadDao("ratelimiter");
 
 module.exports = {
   /**
@@ -14,7 +14,7 @@ module.exports = {
    *     maxHits: 5
    *   }
    * @returns {Promise} - Promise that resolves to number of hits remaining,
-   *   or 0 if the rate limit has been exceeded..
+   *   or -1 if the rate limit has been exceeded..
    */
   hit: async (name, opts) => impl.hit(name, opts),
 };
